@@ -1,9 +1,6 @@
 [workspace]
-members = [
-        "utils",
-        "utils-derive",
-]
-resolver="2"
+members = ["utils", "utils-derive", "day1"]
+resolver = "2"
 
 [workspace.package]
 version = "0.1.0"
@@ -12,4 +9,3 @@ edition = "2021"
 [workspace.dependencies]
 anyhow = "1.0.93"
 utils = { path = "utils" }
-
