@@ -1,5 +1,5 @@
 [workspace]
-members = ["utils", "utils-derive", "day1"]
+members = ["utils", "utils-derive", "day1", "day2"]
 resolver = "2"
 
 [workspace.package]
