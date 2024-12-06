@@ -26,10 +26,14 @@ pub fn aoc(attr: TokenStream, item: TokenStream) -> TokenStream {
                 let input = args.get_input(#d)?;
 
                 if args.run_one() {
-                    println!("part one:\n{}", inner_one::solve_one(&input)?);
+                    let one = inner_one::solve_one(&input)?;
+                    println!("part one:\n{}", one);
+                    args.submit_one(#d, one);
                 }
                 if args.run_two() {
-                    println!("part two:\n{}", inner_two::solve_two(&input)?);
+                    let two = inner_two::solve_two(&input)?;
+                    println!("part two:\n{}", two);
+                    args.submit_two(#d, two);
                 }
 
                 Ok(())
