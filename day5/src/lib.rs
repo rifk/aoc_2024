@@ -1,13 +1,17 @@
+use anyhow::{anyhow, Result};
 use std::collections::{HashMap, HashSet};
 
-use anyhow::{anyhow, Result};
+struct ParsedInput {
+    rules: HashMap<usize, HashSet<usize>>,
+    updates: Vec<Vec<usize>>,
+}
 
-fn parse_input(input: &str) -> Result<(HashMap<usize, HashSet<usize>>, Vec<Vec<usize>>)> {
+fn parse_input(input: &str) -> Result<ParsedInput> {
     let (rules, updates) = input
         .split_once("\n\n")
         .ok_or_else(|| anyhow!("missing empty line"))?;
-    Ok((
-        rules
+    Ok(ParsedInput {
+        rules: rules
             .lines()
             .map(|line| {
                 let (l, r) = line.split_once('|').ok_or_else(|| anyhow!("missing |"))?;
@@ -27,7 +31,7 @@ fn parse_input(input: &str) -> Result<(HashMap<usize, HashSet<usize>>, Vec<Vec<u
                     });
                 map
             }),
-        updates
+        updates: updates
             .lines()
             .map(|line| {
                 line.split(',')
@@ -35,32 +39,28 @@ fn parse_input(input: &str) -> Result<(HashMap<usize, HashSet<usize>>, Vec<Vec<u
                     .collect::<Result<Vec<usize>>>()
             })
             .collect::<Result<Vec<Vec<usize>>>>()?,
-    ))
+    })
 }
 
 pub fn solve_one(input: &str) -> Result<String> {
-    let (rules, updates) = parse_input(input)?;
+    let ParsedInput { rules, updates } = parse_input(input)?;
 
     Ok(updates
         .into_iter()
         .filter_map(|update| {
             let mut seen = HashSet::new();
-            if update
-                .iter()
-                .find(|&v| {
-                    if rules
-                        .get(v)
-                        .map(|after| seen.intersection(after).count() != 0)
-                        .unwrap_or(false)
-                    {
-                        true
-                    } else {
-                        seen.insert(*v);
-                        false
-                    }
-                })
-                .is_some()
-            {
+            if update.iter().any(|v| {
+                if rules
+                    .get(v)
+                    .map(|after| seen.intersection(after).count() != 0)
+                    .unwrap_or(false)
+                {
+                    true
+                } else {
+                    seen.insert(*v);
+                    false
+                }
+            }) {
                 None
             } else {
                 Some(update[update.len() / 2])
@@ -71,7 +71,7 @@ pub fn solve_one(input: &str) -> Result<String> {
 }
 
 pub fn solve_two(input: &str) -> Result<String> {
-    let (rules, updates) = parse_input(input)?;
+    let ParsedInput { rules, updates } = parse_input(input)?;
 
     Ok(updates
         .into_iter()

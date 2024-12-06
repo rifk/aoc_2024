@@ -11,7 +11,7 @@ pub fn solve_one(input: &str) -> Result<String> {
         .sum::<usize>()
         .to_string())
 }
-fn count_xmas(chars: &Vec<Vec<char>>, i: usize, j: usize) -> usize {
+fn count_xmas(chars: &[Vec<char>], i: usize, j: usize) -> usize {
     enum Dir {
         N,
         S,
@@ -22,7 +22,7 @@ fn count_xmas(chars: &Vec<Vec<char>>, i: usize, j: usize) -> usize {
         SE,
         SW,
     }
-    fn is_xmas(chars: &Vec<Vec<char>>, i: usize, j: usize, dir: Dir, next: char) -> bool {
+    fn is_xmas(chars: &[Vec<char>], i: usize, j: usize, dir: &Dir, next: char) -> bool {
         let Some((i, j)) = (|| {
             Some(match dir {
                 Dir::N => (i.checked_sub(1)?, j),
@@ -47,14 +47,19 @@ fn count_xmas(chars: &Vec<Vec<char>>, i: usize, j: usize) -> usize {
         }
     }
     if chars[i][j] == 'X' {
-        is_xmas(chars, i, j, Dir::N, 'M') as usize
-            + is_xmas(chars, i, j, Dir::S, 'M') as usize
-            + is_xmas(chars, i, j, Dir::E, 'M') as usize
-            + is_xmas(chars, i, j, Dir::W, 'M') as usize
-            + is_xmas(chars, i, j, Dir::NE, 'M') as usize
-            + is_xmas(chars, i, j, Dir::NW, 'M') as usize
-            + is_xmas(chars, i, j, Dir::SE, 'M') as usize
-            + is_xmas(chars, i, j, Dir::SW, 'M') as usize
+        vec![
+            Dir::N,
+            Dir::S,
+            Dir::E,
+            Dir::W,
+            Dir::NE,
+            Dir::NW,
+            Dir::SE,
+            Dir::SW,
+        ]
+        .into_iter()
+        .filter(|dir| is_xmas(chars, i, j, dir, 'M'))
+        .count()
     } else {
         0
     }
@@ -71,7 +76,7 @@ pub fn solve_two(input: &str) -> Result<String> {
         .count()
         .to_string())
 }
-fn is_x_mas(chars: &Vec<Vec<char>>, i: usize, j: usize) -> bool {
+fn is_x_mas(chars: &[Vec<char>], i: usize, j: usize) -> bool {
     if chars[i][j] != 'A' {
         return false;
     }
@@ -85,11 +90,8 @@ fn is_x_mas(chars: &Vec<Vec<char>>, i: usize, j: usize) -> bool {
     })() else {
         return false;
     };
-    match corners {
-        ('M', 'M', 'S', 'S')
-        | ('M', 'S', 'M', 'S')
-        | ('S', 'S', 'M', 'M')
-        | ('S', 'M', 'S', 'M') => true,
-        _ => false,
-    }
+    matches!(
+        corners,
+        ('M', 'M', 'S', 'S') | ('M', 'S', 'M', 'S') | ('S', 'S', 'M', 'M') | ('S', 'M', 'S', 'M')
+    )
 }
